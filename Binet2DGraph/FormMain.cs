@@ -45,7 +45,7 @@ namespace Binet2DGraph {
                         break;
                     case Keys.Subtract:
                         zx /= 1.2f;
-                        zx /= 1.2f;
+                        zy /= 1.2f;
                         this.Invalidate();
                         break;
                     case Keys.Up:
