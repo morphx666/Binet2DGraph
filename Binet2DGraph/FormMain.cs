@@ -37,6 +37,7 @@ namespace Binet2DGraph {
             this.Paint += DrawGraph;
 
             this.KeyDown += (object s, KeyEventArgs e) => {
+                bool isCtrl = (e.Modifiers & Keys.Control) == Keys.Control;
                 switch(e.KeyCode) {
                     case Keys.Add:
                         zx *= 1.2f;
@@ -49,19 +50,31 @@ namespace Binet2DGraph {
                         this.Invalidate();
                         break;
                     case Keys.Up:
-                        offset.Y += 10;
+                        if(isCtrl)
+                            zy *= 1.2f;
+                        else
+                            offset.Y += 10;
                         this.Invalidate();
                         break;
                     case Keys.Down:
-                        offset.Y -= 10;
+                        if(isCtrl)
+                            zy /= 1.2f;
+                        else
+                            offset.Y -= 10;
                         this.Invalidate();
                         break;
                     case Keys.Left:
-                        offset.X += 10;
+                        if(isCtrl)
+                            zx *= 1.2f;
+                        else
+                            offset.X += 10;
                         this.Invalidate();
                         break;
                     case Keys.Right:
-                        offset.X -= 10;
+                        if(isCtrl)
+                            zx /= 1.2f;
+                        else
+                            offset.X -= 10;
                         this.Invalidate();
                         break;
                 }
@@ -100,8 +113,7 @@ namespace Binet2DGraph {
         }
 
         private void AddPoint(List<PointF> pts, Rectangle r, float x, float y) {
-            pts.Add(new PointF(Math.Min(x, r.Width - offset.X),
-                               Math.Min(y, r.Height + offset.Y)));
+            pts.Add(new PointF(x, y));
         }
 
         private void DrawAxes(Graphics g, Rectangle r) {
