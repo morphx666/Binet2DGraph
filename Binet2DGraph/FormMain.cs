@@ -83,20 +83,25 @@ namespace Binet2DGraph {
             List<PointF> psn = new List<PointF>();
             for(double n = 0; n < maxIter; n += iterStep) {
                 b = Binet(n);
-                psp.Add(new PointF((float)b.Real * z, (float)b.Imaginary * z10));
+                AddPoint(psp, r, (float)b.Real * z, (float)b.Imaginary * z10);
 
                 b = Binet(-n);
-                psn.Add(new PointF((float)b.Real * z, (float)b.Imaginary * z));
+                AddPoint(psn, r, (float)b.Real * z, (float)b.Imaginary * z);
             }
+
             g.DrawCurve(Pens.DeepSkyBlue, psp.ToArray());
-            //g.DrawCurve(Pens.YellowGreen, psn.ToArray());
+            g.DrawCurve(Pens.YellowGreen, psn.ToArray());
 
             DrawTicks(g, r);
         }
 
+        private void AddPoint(List<PointF> pts, Rectangle r, float x, float y) {
+            pts.Add(new PointF(Math.Min(x, r.Width - offset.X), Math.Min(y, r.Height + offset.Y)));
+        }
+
         private void DrawAxes(Graphics g, Rectangle r) {
-            g.DrawLine(axesColor, -r.Width / 2-offset.X, 0, r.Width / 2-offset.X, 0);
-            g.DrawLine(axesColor, 0, r.Height / 2+offset.Y, 0, -r.Height / 2+offset.Y);
+            g.DrawLine(axesColor, -r.Width / 2 - offset.X, 0, r.Width / 2 - offset.X, 0);
+            g.DrawLine(axesColor, 0, r.Height / 2 + offset.Y, 0, -r.Height / 2 + offset.Y);
         }
 
         private void DrawTicks(Graphics g, Rectangle r) {
