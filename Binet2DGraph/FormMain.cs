@@ -22,7 +22,7 @@ namespace Binet2DGraph {
 
         private static float zx = 50.0f; // Scale X axis
         private static float zy = 50.0f; // Scale Y axis
-        private static float maxIter = 30.0f;
+        private static float maxIter = 100.0f;
         private static float iterStep = 0.05f;
         private PointF offset = new PointF(-zx * 5, 0);
 
@@ -113,11 +113,11 @@ namespace Binet2DGraph {
         }
 
         private void AddPoint(List<PointF> pts, Rectangle r, float x, float y) {
-            x = Math.Min(+r.Width, x);
-            x = Math.Max(-r.Width, x);
+            x = Math.Min(+r.Width - offset.X, x);
+            x = Math.Max(-r.Width - offset.X, x);
 
-            y = Math.Min(+r.Height, y);
-            y = Math.Max(-r.Height, y);
+            y = Math.Min(+r.Height + offset.Y, y);
+            y = Math.Max(-r.Height + offset.Y, y);
 
             pts.Add(new PointF(x, y));
         }
