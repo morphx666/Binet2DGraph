@@ -113,6 +113,12 @@ namespace Binet2DGraph {
         }
 
         private void AddPoint(List<PointF> pts, Rectangle r, float x, float y) {
+            x = Math.Min(+r.Width, x);
+            x = Math.Max(-r.Width, x);
+
+            y = Math.Min(+r.Height, y);
+            y = Math.Max(-r.Height, y);
+
             pts.Add(new PointF(x, y));
         }
 
