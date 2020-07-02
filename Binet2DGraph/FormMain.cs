@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Numerics;
+using System.Security.Policy;
 using System.Windows.Forms;
 
 // https://www.youtube.com/watch?v=ghxQA3vvhsk
@@ -19,10 +20,11 @@ namespace Binet2DGraph {
         private Pen axesColor = Pens.DimGray;
         private Pen ticksColor = Pens.DarkGray;
 
-        private float z = 50.0f;
-        private float maxIter = 30.0f;
-        private float iterStep = 0.05f;
-        private PointF offset = new PointF();
+        private static float zx = 50.0f; // Scale X axis
+        private static float zy = 50.0f; // Scale Y axis
+        private static float maxIter = 30.0f;
+        private static float iterStep = 0.05f;
+        private PointF offset = new PointF(-zx * 5, 0);
 
         public FormMain() {
             InitializeComponent();
@@ -37,11 +39,13 @@ namespace Binet2DGraph {
             this.KeyDown += (object s, KeyEventArgs e) => {
                 switch(e.KeyCode) {
                     case Keys.Add:
-                        z *= 1.2f;
+                        zx *= 1.2f;
+                        zy *= 1.2f;
                         this.Invalidate();
                         break;
                     case Keys.Subtract:
-                        z /= 1.2f;
+                        zx /= 1.2f;
+                        zx /= 1.2f;
                         this.Invalidate();
                         break;
                     case Keys.Up:
@@ -67,9 +71,9 @@ namespace Binet2DGraph {
         private void DrawGraph(object sender, PaintEventArgs e) {
             Graphics g = e.Graphics;
             Rectangle r = this.DisplayRectangle;
-            float z10 = z * 10.0f; // Constant positive imaginary values zoom
-                                   //float z10 = 50.0f / z * 500.0f; // Increase vertical zoom for 
-                                   // positive imaginary values while zooming out
+            float zy10 = zy * 10.0f; // Constant positive imaginary values zoom
+                                     //float z10 = 50.0f / z * 500.0f; // Increase vertical zoom for 
+                                     // positive imaginary values while zooming out
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -83,10 +87,10 @@ namespace Binet2DGraph {
             List<PointF> psn = new List<PointF>();
             for(double n = 0; n < maxIter; n += iterStep) {
                 b = Binet(n);
-                AddPoint(psp, r, (float)b.Real * z, (float)b.Imaginary * z10);
+                AddPoint(psp, r, (float)b.Real * zx, (float)b.Imaginary * zy10);
 
                 b = Binet(-n);
-                AddPoint(psn, r, (float)b.Real * z, (float)b.Imaginary * z);
+                AddPoint(psn, r, (float)b.Real * zx, (float)b.Imaginary * zy);
             }
 
             g.DrawCurve(Pens.DeepSkyBlue, psp.ToArray());
@@ -96,7 +100,8 @@ namespace Binet2DGraph {
         }
 
         private void AddPoint(List<PointF> pts, Rectangle r, float x, float y) {
-            pts.Add(new PointF(Math.Min(x, r.Width - offset.X), Math.Min(y, r.Height + offset.Y)));
+            pts.Add(new PointF(Math.Min(x, r.Width - offset.X),
+                               Math.Min(y, r.Height + offset.Y)));
         }
 
         private void DrawAxes(Graphics g, Rectangle r) {
@@ -112,7 +117,7 @@ namespace Binet2DGraph {
             float lastXY = 0;
             int v = 1;
 
-            xy = z;
+            xy = zx;
             while(xy - Math.Abs(offset.X) < r.Width) {
                 if((xy - lastXY) > fh) {
                     g.DrawLine(ticksColor, +xy, 5, +xy, -5);
@@ -123,13 +128,13 @@ namespace Binet2DGraph {
                     // TODO: Improve this formula... we can do better
                     lastXY = xy + ((-v).ToString().Length * fh / 2);
                 }
-                xy += z;
+                xy += zx;
                 v++;
             }
 
             lastXY = 0;
             v = 1;
-            xy = z;
+            xy = zy;
             while(xy - Math.Abs(offset.Y) < r.Height) {
                 if((xy - lastXY) > fh) {
                     g.DrawLine(ticksColor, -5, +xy, 5, +xy);
@@ -141,12 +146,12 @@ namespace Binet2DGraph {
                     lastXY = xy + fh;
                 }
 
-                xy += z;
+                xy += zy;
                 v++;
             }
         }
 
-        public Complex Binet(Complex n) {
+        public static Complex Binet(Complex n) {
             return ((Complex.Pow(phi, n) - Complex.Pow(-1.0 / phi, n)) / s5);
         }
     }
